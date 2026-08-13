@@ -1,9 +1,13 @@
 name: Process Dictionary Issues
 
 on:
-  schedule:
-    - cron: '0 * * * *'
+  issues:
+    types: [labeled]
   workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Issue number to process
+        required: true
 
 permissions:
   contents: write
@@ -11,6 +15,7 @@ permissions:
 
 jobs:
   process:
+    if: ${{ github.event.label.name == 'dictionary' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     env:
       LANG: C.UTF-8
@@ -20,13 +25,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install anthropic requests
+      - run: pip install requests
       - name: Configure git
         run: |
           git config user.email "claude.ai.engine796@passmail.net"
           git config user.name "deepcharles"
-      - name: Process issues
+      - name: Process issue
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
         run: python3 scripts/process_issues.py

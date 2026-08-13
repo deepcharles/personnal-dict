@@ -1,0 +1,59 @@
+name: Dictionary Entry
+description: Add a new word, idiom, or quote to the dictionary
+labels: ["dictionary"]
+body:
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - word
+        - idiom
+        - quote
+    validations:
+      required: true
+
+  - type: input
+    id: term
+    attributes:
+      label: Term
+      placeholder: "e.g. ephemeral"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: lang
+    attributes:
+      label: Language
+      options:
+        - en
+        - fr
+        - ar
+    validations:
+      required: true
+
+  - type: input
+    id: pronunciation
+    attributes:
+      label: Pronunciation (IPA)
+      description: "Words only. E.g. /ɪˈfem.ər.əl/"
+      placeholder: "/…/"
+
+  - type: textarea
+    id: meaning
+    attributes:
+      label: Meaning
+      placeholder: "A short definition (required for words and idioms)"
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      placeholder: "Your own sentence using the term (optional)"
+
+  - type: input
+    id: attribution
+    attributes:
+      label: Attribution
+      description: "Quotes only. E.g. Slim Charles, The Wire"
+      placeholder: "Name, Source"

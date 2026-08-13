@@ -1,71 +1,84 @@
 #!/usr/bin/env python3
-"""Process GitHub issues labelled 'dictionary' and add entries to index.html."""
+"""Process a GitHub dictionary issue and add the entry to entries.json."""
 import json
 import os
 import subprocess
 import sys
 
-import anthropic
 import requests
 
 GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
 REPO = os.environ.get("GITHUB_REPOSITORY", "deepcharles/personnal-dict")
+ISSUE_NUMBER = os.environ["ISSUE_NUMBER"]
+ISSUE_BODY = os.environ.get("ISSUE_BODY", "")
 API = "https://api.github.com"
 HEADERS = {
     "Authorization": f"Bearer {GITHUB_TOKEN}",
     "Accept": "application/vnd.github+json",
 }
 
-SYSTEM_PROMPT = """You convert dictionary issue titles into JSON entry objects for a personal dictionary.
 
-Schema rules:
-- type: "word" | "idiom" | "quote" (required)
-- term: headword or phrase (required, lowercase unless proper noun)
-- lang: "en" | "fr" | "ar" (required for words/idioms)
-- meaning: short definition (words & idioms only)
-- example: an example sentence showing the term in use (optional)
-- Words additionally get:
-    pronunciation: IPA in slashes, e.g. /ɪˈfem.ər.əl/
-    cambridge: URL following https://dictionary.cambridge.org/pronunciation/english/<term>
-               (or /french-english/<term> for French words)
-- Quotes use attribution (who said/wrote it) instead of meaning
-
-Rules:
-- Words get pronunciation AND cambridge. Idioms and quotes do NOT.
-- Return ONLY the raw JSON object — no markdown fences, no explanation."""
-
-
-def get_issues():
-    resp = requests.get(
-        f"{API}/repos/{REPO}/issues",
-        params={"state": "open", "labels": "dictionary", "per_page": 100},
-        headers=HEADERS,
-    )
+def fetch_issue():
+    """Fetch issue body from API (needed for workflow_dispatch where env var is empty)."""
+    if ISSUE_BODY.strip():
+        return ISSUE_BODY
+    resp = requests.get(f"{API}/repos/{REPO}/issues/{ISSUE_NUMBER}", headers=HEADERS)
     resp.raise_for_status()
-    return resp.json()
+    return resp.json()["body"] or ""
 
 
-def close_issue(number):
-    resp = requests.patch(
-        f"{API}/repos/{REPO}/issues/{number}",
-        json={"state": "closed"},
-        headers=HEADERS,
-    )
-    resp.raise_for_status()
+def parse_form(body):
+    """Parse GitHub issue form body into a dict of field -> value."""
+    sections = {}
+    current = None
+    for line in body.splitlines():
+        if line.startswith("### "):
+            current = line[4:].strip().lower()
+            sections[current] = []
+        elif current is not None:
+            stripped = line.strip()
+            if stripped and stripped != "_No response_":
+                sections[current].append(stripped)
+    return {k: " ".join(v) for k, v in sections.items() if v}
 
 
-def format_entry(issue_title):
-    client = anthropic.Anthropic()
-    message = client.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=512,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": issue_title}],
-    )
-    return json.loads(message.content[0].text)
+def build_entry(fields):
+    """Build a dictionary entry object from parsed form fields."""
+    type_ = fields.get("type", "word").strip().lower()
+    term = fields.get("term", "").strip().lower()
+    lang = fields.get("lang", fields.get("language", "en")).strip().lower()
+
+    if not term:
+        raise ValueError("Term is required")
+
+    entry = {"type": type_, "term": term, "lang": lang}
+
+    if type_ == "word":
+        pron = fields.get("pronunciation (ipa)", fields.get("pronunciation", "")).strip()
+        if pron:
+            entry["pronunciation"] = pron
+        slug = term.replace(" ", "-")
+        if lang == "fr":
+            entry["cambridge"] = f"https://dictionary.cambridge.org/pronunciation/french-english/{slug}"
+        else:
+            entry["cambridge"] = f"https://dictionary.cambridge.org/pronunciation/english/{slug}"
+
+    meaning = fields.get("meaning", "").strip()
+    if meaning and type_ != "quote":
+        entry["meaning"] = meaning
+
+    attribution = fields.get("attribution", "").strip()
+    if attribution and type_ == "quote":
+        entry["attribution"] = attribution
+
+    example = fields.get("example", "").strip()
+    if example:
+        entry["example"] = example
+
+    return entry
 
 
-def add_entry_to_json(entry):
+def add_entry(entry):
     with open("entries.json", encoding="utf-8") as f:
         entries = json.load(f)
     entries.append(entry)
@@ -74,10 +87,12 @@ def add_entry_to_json(entry):
         f.write("\n")
 
 
-def validate():
-    with open("entries.json", encoding="utf-8") as f:
-        json.load(f)
-    print("OK")
+def close_issue():
+    requests.patch(
+        f"{API}/repos/{REPO}/issues/{ISSUE_NUMBER}",
+        json={"state": "closed"},
+        headers=HEADERS,
+    ).raise_for_status()
 
 
 def git_push(entry):
@@ -89,24 +104,21 @@ def git_push(entry):
 
 
 def main():
-    issues = get_issues()
-    if not issues:
-        print("No pending dictionary issues.")
-        sys.exit(0)
-
-    for issue in issues:
-        print(f"Processing #{issue['number']}: {issue['title']}")
-        try:
-            entry = format_entry(issue["title"])
-            add_entry_to_json(entry)
-            validate()
-            git_push(entry)
-            close_issue(issue["number"])
-            print(f"  Added {entry['type']}: {entry['term']}")
-        except Exception as e:
-            print(f"  Failed: {e}", file=sys.stderr)
-            subprocess.run(["git", "checkout", "index.html"])
-            sys.exit(1)
+    print(f"Processing issue #{ISSUE_NUMBER}")
+    try:
+        body = fetch_issue()
+        fields = parse_form(body)
+        entry = build_entry(fields)
+        add_entry(entry)
+        with open("entries.json", encoding="utf-8") as f:
+            json.load(f)  # validate
+        git_push(entry)
+        close_issue()
+        print(f"Added {entry['type']}: {entry['term']}")
+    except Exception as e:
+        print(f"Failed: {e}", file=sys.stderr)
+        subprocess.run(["git", "checkout", "entries.json"])
+        sys.exit(1)
 
 
 if __name__ == "__main__":
