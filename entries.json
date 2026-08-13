@@ -38,5 +38,157 @@
     "pronunciation": "/tˤumaʔniːna/",
     "meaning": "a deep sense of tranquillity, reassurance, and inner peace",
     "example": "شعرتُ بطمأنينة عندما عرفتُ أنّ الجميع وصلوا بأمان."
+  },
+  {
+    "type": "idiom",
+    "term": "salad days",
+    "lang": "en",
+    "meaning": "a period of carefree innocence, idealism, and pleasure associated with youth (a Shakespearean idiom)"
+  },
+  {
+    "type": "idiom",
+    "term": "a lump of coal",
+    "lang": "en",
+    "meaning": "a less-than-desirable outcome to an action; negative consequences to someone's behaviour"
+  },
+  {
+    "type": "idiom",
+    "term": "as is someone's wont",
+    "lang": "en",
+    "meaning": "in the way that someone usually does",
+    "example": "She arrived an hour late, as is her wont."
+  },
+  {
+    "type": "idiom",
+    "term": "to give pause for thought",
+    "lang": "en",
+    "meaning": "to make someone stop and think carefully or reconsider before acting"
+  },
+  {
+    "type": "idiom",
+    "term": "guard of honour",
+    "lang": "en",
+    "meaning": "a group of people, often soldiers, formally lined up to receive or salute an important person"
+  },
+  {
+    "type": "idiom",
+    "term": "cautionary tale",
+    "lang": "en",
+    "meaning": "a story or example that warns of a danger or the consequences of a certain behaviour"
+  },
+  {
+    "type": "idiom",
+    "term": "the cut of someone's jib",
+    "lang": "en",
+    "meaning": "the typical way someone behaves or presents themselves",
+    "example": "I like the cut of her jib."
+  },
+  {
+    "type": "idiom",
+    "term": "positive-sum collaboration",
+    "lang": "en",
+    "meaning": "cooperation in which all parties benefit and the overall outcome is greater than the sum of its parts"
+  },
+  {
+    "type": "idiom",
+    "term": "to see off a challenge",
+    "lang": "en",
+    "meaning": "to deal with or withstand a challenge"
+  },
+  {
+    "type": "idiom",
+    "term": "to set out to be a standard-bearer",
+    "lang": "en",
+    "meaning": "to deliberately take on the role of a leading figure or champion of a cause (French: porte-drapeau)"
+  },
+  {
+    "type": "idiom",
+    "term": "basket case",
+    "lang": "en",
+    "meaning": "a person or thing regarded as useless or unable to cope; a group or organization in severe financial difficulties"
+  },
+  {
+    "type": "idiom",
+    "term": "fixer-upper",
+    "lang": "en",
+    "meaning": "a house in need of repair; also said of a situation or person",
+    "example": "a total and complete fixer-upper"
+  },
+  {
+    "type": "idiom",
+    "term": "to have a chip on one's shoulder",
+    "lang": "en",
+    "meaning": "to seem angry all the time because you think you have been treated unfairly or feel you are not as good as other people",
+    "example": "He's got a chip on his shoulder about not having been to university."
+  },
+  {
+    "type": "quote",
+    "term": "mathematical material made by a mad man",
+    "lang": "en",
+    "attribution": "reference to \"Murderous material made by a madman\", Inspectah Deck on Wu-Tang: 7th Chamber"
+  },
+  {
+    "type": "quote",
+    "term": "The game's the same, just got more fierce.",
+    "lang": "en",
+    "attribution": "Slim Charles, The Wire"
+  },
+  {
+    "type": "quote",
+    "term": "Record, loop, repeat / Do that 'bout twenty times",
+    "lang": "en",
+    "attribution": "Nas, Pause Tapes (from Light Years with DJ Premier)"
+  },
+  {
+    "type": "word",
+    "term": "begrudgingly",
+    "lang": "en",
+    "pronunciation": "/bɪˈɡrʌdʒ.ɪŋ.li/",
+    "cambridge": "https://dictionary.cambridge.org/pronunciation/english/begrudgingly",
+    "meaning": "unwillingly, often because you have no choice",
+    "example": "She begrudgingly admitted that he had made the right decision."
+  },
+  {
+    "type": "word",
+    "term": "perennial",
+    "lang": "en",
+    "pronunciation": "/pəˈren.i.əl/",
+    "cambridge": "https://dictionary.cambridge.org/pronunciation/english/perennial",
+    "meaning": "lasting a very long time, or happening repeatedly or all the time",
+    "example": "We face the perennial problem of not having enough money."
+  },
+  {
+    "type": "word",
+    "term": "hallowed",
+    "lang": "en",
+    "pronunciation": "/ˈhæl.əʊd/",
+    "cambridge": "https://dictionary.cambridge.org/pronunciation/english/hallowed",
+    "meaning": "very respected and praised because of great importance or great age",
+    "example": "the hallowed halls of higher education"
+  },
+  {
+    "type": "word",
+    "term": "unblemished",
+    "lang": "en",
+    "pronunciation": "/ʌnˈblem.ɪʃt/",
+    "cambridge": "https://dictionary.cambridge.org/pronunciation/english/unblemished",
+    "meaning": "not damaged or marked in any way",
+    "example": "an unblemished record"
+  },
+  {
+    "type": "word",
+    "term": "boisterous",
+    "lang": "en",
+    "pronunciation": "/ˈbɔɪ.stər.əs/",
+    "cambridge": "https://dictionary.cambridge.org/pronunciation/english/boisterous",
+    "meaning": "noisy, energetic, and cheerful"
+  },
+  {
+    "type": "word",
+    "term": "preposterous",
+    "lang": "en",
+    "pronunciation": "/prɪˈpɒs.tər.əs/",
+    "cambridge": "https://dictionary.cambridge.org/pronunciation/english/preposterous",
+    "meaning": "utterly absurd"
   }
 ]
