@@ -1,45 +1,5 @@
 [
   {
-    "type": "word",
-    "term": "serendipity",
-    "lang": "en",
-    "pronunciation": "/ˌser.ənˈdɪp.ə.ti/",
-    "cambridge": "https://dictionary.cambridge.org/pronunciation/english/serendipity",
-    "meaning": "the fact of finding interesting or valuable things by chance",
-    "example": "Finding this quiet café was pure serendipity — I'd only turned down the street to avoid the rain."
-  },
-  {
-    "type": "idiom",
-    "term": "to bite the bullet",
-    "lang": "en",
-    "meaning": "to force yourself to do something unpleasant or difficult that you have been avoiding",
-    "example": "I finally bit the bullet and booked the dentist appointment I'd been putting off for months."
-  },
-  {
-    "type": "quote",
-    "term": "The limits of my language mean the limits of my world.",
-    "lang": "en",
-    "attribution": "Ludwig Wittgenstein",
-    "example": "I keep this near my desk as a reminder of why I bother collecting words at all."
-  },
-  {
-    "type": "word",
-    "term": "flâner",
-    "lang": "fr",
-    "pronunciation": "/fla.ne/",
-    "cambridge": "https://dictionary.cambridge.org/pronunciation/french-english/flaner",
-    "meaning": "to wander or stroll idly, without a fixed destination, savouring the walk itself",
-    "example": "Le dimanche, j'aime flâner le long de la Seine sans but précis."
-  },
-  {
-    "type": "word",
-    "term": "طُمَأْنِينَة",
-    "lang": "ar",
-    "pronunciation": "/tˤumaʔniːna/",
-    "meaning": "a deep sense of tranquillity, reassurance, and inner peace",
-    "example": "شعرتُ بطمأنينة عندما عرفتُ أنّ الجميع وصلوا بأمان."
-  },
-  {
     "type": "idiom",
     "term": "salad days",
     "lang": "en",
