@@ -111,10 +111,8 @@ def build_entry(fields):
             pron = lookup_ipa(term, lang) or ""
         if pron:
             entry["pronunciation"] = pron
-        slug = term.replace(" ", "-")
-        if lang == "fr":
-            entry["cambridge"] = f"https://dictionary.cambridge.org/pronunciation/french-english/{slug}"
-        else:
+        if lang == "en":
+            slug = term.replace(" ", "-")
             entry["cambridge"] = f"https://dictionary.cambridge.org/pronunciation/english/{slug}"
 
     meaning = fields.get("meaning", "").strip()

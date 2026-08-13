@@ -38,8 +38,8 @@ Common fields:
 
 Words additionally get:
 - `pronunciation` — IPA in slashes, e.g. `/ɪˈfem.ər.əl/`
-- `cambridge` — link to the Cambridge pronunciation entry, e.g.
-  `https://dictionary.cambridge.org/pronunciation/english/ephemeral`
+- `cambridge` — link to the Cambridge pronunciation entry (English words only),
+  e.g. `https://dictionary.cambridge.org/pronunciation/english/ephemeral`
 
 Quotes use instead of `meaning`:
 - `attribution` — who said/wrote it, e.g. `Slim Charles, The Wire`
@@ -49,9 +49,9 @@ Rules:
 - If the owner gives a respelling (e.g. "un-BLEM-isht"), convert it to proper IPA.
 - Lowercase headwords for words/idioms unless a proper noun.
 - Verify the Cambridge URL follows the pattern
-  `https://dictionary.cambridge.org/pronunciation/english/<word>` (or
-  `/french-english/<word>` for French). If unsure a page exists, still follow the
-  pattern; the owner can correct dead links.
+  `https://dictionary.cambridge.org/pronunciation/english/<word>`.
+  Only English words get a Cambridge link. If unsure a page exists, still follow
+  the pattern; the owner can correct dead links.
 
 ## Example entries
 
