@@ -2,7 +2,6 @@
 """Process GitHub issues labelled 'dictionary' and add entries to index.html."""
 import json
 import os
-import re
 import subprocess
 import sys
 
@@ -66,33 +65,25 @@ def format_entry(issue_title):
     return json.loads(message.content[0].text)
 
 
-def add_entry_to_html(entry):
-    with open("index.html", encoding="utf-8") as f:
-        content = f.read()
-    indented = "\n".join(
-        "  " + line
-        for line in json.dumps(entry, ensure_ascii=False, indent=2).splitlines()
-    )
-    new_content = re.sub(r"\n\];", f",\n{indented}\n];", content, count=1)
-    with open("index.html", "w", encoding="utf-8") as f:
-        f.write(new_content)
+def add_entry_to_json(entry):
+    with open("entries.json", encoding="utf-8") as f:
+        entries = json.load(f)
+    entries.append(entry)
+    with open("entries.json", "w", encoding="utf-8") as f:
+        json.dump(entries, f, ensure_ascii=False, indent=2)
+        f.write("\n")
 
 
 def validate():
-    result = subprocess.run(
-        ["python3", "-c",
-         "import json,re; s=open('index.html',encoding='utf-8').read(); "
-         r"json.loads(re.search('\nENTRIES = (\[[\s\S]*?\n\]);', s).group(1)); print('OK')"],
-        capture_output=True, text=True,
-    )
-    if result.returncode != 0:
-        raise ValueError(result.stderr)
+    with open("entries.json", encoding="utf-8") as f:
+        json.load(f)
+    print("OK")
 
 
 def git_push(entry):
     term = entry.get("term", "entry")
     type_ = entry.get("type", "entry")
-    subprocess.run(["git", "add", "index.html"], check=True)
+    subprocess.run(["git", "add", "entries.json"], check=True)
     subprocess.run(["git", "commit", "-m", f"Add {type_}: {term}"], check=True)
     subprocess.run(["git", "push", "origin", "HEAD:main"], check=True)
 
@@ -107,7 +98,7 @@ def main():
         print(f"Processing #{issue['number']}: {issue['title']}")
         try:
             entry = format_entry(issue["title"])
-            add_entry_to_html(entry)
+            add_entry_to_json(entry)
             validate()
             git_push(entry)
             close_issue(issue["number"])

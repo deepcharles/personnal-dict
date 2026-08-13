@@ -9,11 +9,8 @@ in English, French, and Arabic, each with the owner's own example of use.
 The owner will ask you, in plain language, to add entries (e.g. "add the word
 *ephemeral*" or "add this quote from The Wire"). For each request you should:
 
-1. Add the entry/entries to the `ENTRIES` array in `index.html` (see schema + location below).
-2. Validate the embedded JSON:
-   ```bash
-   python3 -c "import json,re; s=open('index.html',encoding='utf-8').read(); json.loads(re.search(r'\nENTRIES = (\[[\s\S]*?\n\]);', s).group(1)); print('OK')"
-   ```
+1. Add the entry/entries to `entries.json` (see schema below).
+2. Validate: `python3 -m json.tool entries.json > /dev/null && echo OK`
 3. Commit with a clear message (e.g. `Add word: ephemeral`).
 4. Push to the default branch (`main`).
 
@@ -22,13 +19,10 @@ request is ambiguous or would delete/overwrite existing entries.
 
 ## Where the data lives
 
-Entries are inlined directly in `index.html` as a JavaScript array assigned to
-`ENTRIES` (search for `ENTRIES = [` to locate it). Each element of the array is
-a JSON-compatible object following the schema below. Add new entries inside that
-array — order within it does not matter.
+Entries live in `entries.json` at the repo root — a JSON array of objects.
+`index.html` loads it at runtime via `fetch('entries.json')`.
 
-The switch from `entries.json` to inline data was made to avoid UTF-8 encoding
-corruption in the GitLab Pages CI pipeline.
+Add new entries to `entries.json`. Order within the array does not matter.
 
 ## Entry schema
 
