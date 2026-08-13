@@ -334,7 +334,7 @@
       <button class="chip" data-f="quote" aria-pressed="false">Quotes</button>
       <select id="sort-select" class="sort-select" aria-label="Sort order">
         <option value="alpha">A–Z</option>
-        <option value="date">Newest</option>
+        <option value="date" selected>Newest</option>
       </select>
     </div>
     <button class="dice" id="random"><span class="pip">⚄</span> Draw one</button>
@@ -355,7 +355,7 @@ const RTL = new Set(["ar"]);
 let ENTRIES = [];
 let filter = "all";
 let query = "";
-let sort = "alpha";
+let sort = "date";
 
 const listEl = document.getElementById("list");
 const countEl = document.getElementById("count");
