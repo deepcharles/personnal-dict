@@ -4,6 +4,7 @@ import json
 import os
 import subprocess
 import sys
+from datetime import date
 
 import requests
 
@@ -127,6 +128,8 @@ def build_entry(fields):
     example = fields.get("example", "").strip()
     if example:
         entry["example"] = example
+
+    entry["date"] = date.today().isoformat()
 
     return entry
 

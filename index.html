@@ -92,7 +92,32 @@
     color:var(--muted);
     font-size:1.2rem;
   }
-  .filters{display:flex;gap:.3rem;flex-wrap:wrap}
+  .filters{display:flex;gap:.3rem;flex-wrap:wrap;align-items:center}
+  .sort-select{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.66rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    padding:.42rem .7rem;
+    border:1px solid var(--rule);
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    border-radius:2px;
+    appearance:none;
+    -webkit-appearance:none;
+    transition:all .18s;
+  }
+  .sort-select:hover{border-color:var(--accent-soft);color:var(--accent)}
+  .sort-select:focus{border-color:var(--accent);outline:none}
+  .entry-date{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.58rem;
+    letter-spacing:.1em;
+    color:var(--rule);
+    margin-left:auto;
+    align-self:center;
+  }
   .chip{
     font-family:ui-monospace,"SF Mono",Menlo,monospace;
     font-size:.66rem;
@@ -307,6 +332,10 @@
       <button class="chip" data-f="word" aria-pressed="false">Words</button>
       <button class="chip" data-f="idiom" aria-pressed="false">Idioms</button>
       <button class="chip" data-f="quote" aria-pressed="false">Quotes</button>
+      <select id="sort-select" class="sort-select" aria-label="Sort order">
+        <option value="alpha">A–Z</option>
+        <option value="date">Newest</option>
+      </select>
     </div>
     <button class="dice" id="random"><span class="pip">⚄</span> Draw one</button>
   </div>
@@ -326,6 +355,7 @@ const RTL = new Set(["ar"]);
 let ENTRIES = [];
 let filter = "all";
 let query = "";
+let sort = "alpha";
 
 const listEl = document.getElementById("list");
 const countEl = document.getElementById("count");
@@ -350,6 +380,7 @@ function render(list){
     let head = `<span class="kind">${kind}</span>`;
     head += `<span class="term">${esc(e.term)}</span>`;
     if(e.lang && e.type!=="quote") head += `<span class="lang">${LANG_LABEL[e.lang]||e.lang}</span>`;
+    if(e.date) head += `<span class="entry-date">${new Date(e.date).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}</span>`;
 
     let pron = "";
     if(e.pronunciation || e.cambridge){
@@ -372,13 +403,25 @@ function render(list){
   footCountEl.textContent = ENTRIES.length + " total";
 }
 
+function sorted(list){
+  if(sort==="date"){
+    return [...list].sort((a,b)=>{
+      if(!a.date&&!b.date) return 0;
+      if(!a.date) return 1;
+      if(!b.date) return -1;
+      return b.date.localeCompare(a.date);
+    });
+  }
+  return [...list].sort((a,b)=>(a.term||"").localeCompare(b.term||""));
+}
+
 function current(){
   const q = query.trim().toLowerCase();
-  return ENTRIES.filter(e=>{
+  return sorted(ENTRIES.filter(e=>{
     if(filter!=="all" && (e.type||"word")!==filter) return false;
     if(!q) return true;
     return [e.term,e.meaning,e.example,e.attribution].some(f=>(f||"").toLowerCase().includes(q));
-  });
+  }));
 }
 
 function apply(){ render(current()); }
@@ -392,6 +435,8 @@ document.getElementById("filters").addEventListener("click",ev=>{
 });
 
 searchEl.addEventListener("input",e=>{ query=e.target.value; apply(); });
+
+document.getElementById("sort-select").addEventListener("change",e=>{ sort=e.target.value; apply(); });
 
 document.getElementById("random").addEventListener("click",()=>{
   const pool = current().length ? current() : ENTRIES;

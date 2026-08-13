@@ -34,6 +34,7 @@ Common fields:
 - `lang` — "en" | "fr" | "ar" (required for words/idioms; optional for quotes)
 - `meaning` — a short definition (words & idioms)
 - `example` — the owner's own sentence showing the term in use (optional but encouraged)
+- `date` — ISO date the entry was added, e.g. `"2026-08-13"` (set automatically; add manually when adding entries locally)
 
 Words additionally get:
 - `pronunciation` — IPA in slashes, e.g. `/ɪˈfem.ər.əl/`
