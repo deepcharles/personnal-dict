@@ -42,6 +42,57 @@ def parse_form(body):
     return {k: " ".join(v) for k, v in sections.items() if v}
 
 
+# Arabic letter → IPA mapping (consonants + harakat)
+_AR_IPA = {
+    'ب':'b','ت':'t','ث':'θ','ج':'dʒ','ح':'ħ','خ':'x','د':'d','ذ':'ð',
+    'ر':'r','ز':'z','س':'s','ش':'ʃ','ص':'sˤ','ض':'dˤ','ط':'tˤ','ظ':'ðˤ',
+    'ع':'ʕ','غ':'ɣ','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n',
+    'ه':'h','و':'w','ي':'j','ا':'aː','ى':'aː','ة':'a',
+    'أ':'ʔ','إ':'ʔ','آ':'ʔaː','ء':'ʔ','ؤ':'ʔ','ئ':'ʔ',
+    'َ':'a','ِ':'i','ُ':'u',  # fatha, kasra, damma
+    'ً':'an','ٍ':'in','ٌ':'un',  # tanwin
+    'ْ':'',  # sukun
+}
+
+
+def _arabic_to_ipa(text):
+    result = []
+    for i, c in enumerate(text):
+        if c == 'ّ' and result:  # shadda: geminate previous consonant
+            result.append(result[-1])
+        else:
+            result.append(_AR_IPA.get(c, ''))
+    ipa = ''.join(result)
+    return f'/{ipa}/' if ipa else None
+
+
+def _english_to_ipa(term):
+    try:
+        resp = requests.get(
+            f"https://api.dictionaryapi.dev/api/v2/entries/en/{term}",
+            timeout=5,
+        )
+        if resp.status_code != 200:
+            return None
+        for entry in resp.json():
+            if entry.get("phonetic"):
+                return entry["phonetic"]
+            for p in entry.get("phonetics", []):
+                if p.get("text"):
+                    return p["text"]
+    except Exception:
+        pass
+    return None
+
+
+def lookup_ipa(term, lang):
+    if lang == "en":
+        return _english_to_ipa(term)
+    if lang == "ar":
+        return _arabic_to_ipa(term)
+    return None
+
+
 def build_entry(fields):
     """Build a dictionary entry object from parsed form fields."""
     type_ = fields.get("type", "word").strip().lower()
@@ -55,6 +106,8 @@ def build_entry(fields):
 
     if type_ == "word":
         pron = fields.get("pronunciation (ipa)", fields.get("pronunciation", "")).strip()
+        if not pron:
+            pron = lookup_ipa(term, lang) or ""
         if pron:
             entry["pronunciation"] = pron
         slug = term.replace(" ", "-")
