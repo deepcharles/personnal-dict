@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Process GitLab issues labelled 'dictionary' and add entries to index.html."""
+"""Process GitHub issues labelled 'dictionary' and add entries to index.html."""
 import json
 import os
 import re
@@ -9,9 +9,13 @@ import sys
 import anthropic
 import requests
 
-GITLAB_URL = os.environ.get("CI_SERVER_URL", "https://plmlab.math.cnrs.fr")
-PROJECT_ID = os.environ["CI_PROJECT_ID"]
-GITLAB_TOKEN = os.environ["GITLAB_TOKEN"]
+GITHUB_TOKEN = os.environ["GITHUB_TOKEN"]
+REPO = os.environ.get("GITHUB_REPOSITORY", "deepcharles/personnal-dict")
+API = "https://api.github.com"
+HEADERS = {
+    "Authorization": f"Bearer {GITHUB_TOKEN}",
+    "Accept": "application/vnd.github+json",
+}
 
 SYSTEM_PROMPT = """You convert dictionary issue titles into JSON entry objects for a personal dictionary.
 
@@ -34,19 +38,19 @@ Rules:
 
 def get_issues():
     resp = requests.get(
-        f"{GITLAB_URL}/api/v4/projects/{PROJECT_ID}/issues",
-        params={"state": "opened", "labels": "dictionary", "per_page": 100},
-        headers={"PRIVATE-TOKEN": GITLAB_TOKEN},
+        f"{API}/repos/{REPO}/issues",
+        params={"state": "open", "labels": "dictionary", "per_page": 100},
+        headers=HEADERS,
     )
     resp.raise_for_status()
     return resp.json()
 
 
-def close_issue(iid):
-    resp = requests.put(
-        f"{GITLAB_URL}/api/v4/projects/{PROJECT_ID}/issues/{iid}",
-        params={"state_event": "close"},
-        headers={"PRIVATE-TOKEN": GITLAB_TOKEN},
+def close_issue(number):
+    resp = requests.patch(
+        f"{API}/repos/{REPO}/issues/{number}",
+        json={"state": "closed"},
+        headers=HEADERS,
     )
     resp.raise_for_status()
 
@@ -89,7 +93,7 @@ def git_push(entry):
     term = entry.get("term", "entry")
     type_ = entry.get("type", "entry")
     subprocess.run(["git", "add", "index.html"], check=True)
-    subprocess.run(["git", "commit", "-m", f"Add {type_}: {term} [skip ci]"], check=True)
+    subprocess.run(["git", "commit", "-m", f"Add {type_}: {term}"], check=True)
     subprocess.run(["git", "push", "origin", "HEAD:main"], check=True)
 
 
@@ -99,17 +103,14 @@ def main():
         print("No pending dictionary issues.")
         sys.exit(0)
 
-    subprocess.run(["git", "config", "user.email", "claude.ai.engine796@passmail.net"], check=True)
-    subprocess.run(["git", "config", "user.name", "deepcharles"], check=True)
-
     for issue in issues:
-        print(f"Processing #{issue['iid']}: {issue['title']}")
+        print(f"Processing #{issue['number']}: {issue['title']}")
         try:
             entry = format_entry(issue["title"])
             add_entry_to_html(entry)
             validate()
             git_push(entry)
-            close_issue(issue["iid"])
+            close_issue(issue["number"])
             print(f"  Added {entry['type']}: {entry['term']}")
         except Exception as e:
             print(f"  Failed: {e}", file=sys.stderr)

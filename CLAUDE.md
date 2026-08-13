@@ -1,7 +1,7 @@
 # Personal Dictionary — project guide for Claude Code
 
-This repo is a static personal dictionary website, hosted on GitLab Pages at
-`plmlab.math.cnrs.fr/ctruong/personnal-dict`. It holds words, idioms, and quotes
+This repo is a static personal dictionary website, hosted on GitHub Pages at
+`deepcharles.github.io/personnal-dict`. It holds words, idioms, and quotes
 in English, French, and Arabic, each with the owner's own example of use.
 
 ## Your job
@@ -103,5 +103,10 @@ corrupted it.
 
 ## Deployment
 
-Pushing to `main` triggers the Pages pipeline, which publishes the site. After a
-push, you can mention that the change will be live once the pipeline finishes.
+The repo is on GitHub at `github.com/deepcharles/personnal-dict`. Pushing to
+`main` triggers GitHub Pages to rebuild the site. After a push, the change will
+be live at `deepcharles.github.io/personnal-dict` once the Pages build finishes.
+
+New entries can also be added by opening a GitHub issue with the `dictionary`
+label. A scheduled GitHub Actions workflow (`process-issues.yml`) runs hourly,
+calls the Anthropic API to format the entry, commits it, and closes the issue.
