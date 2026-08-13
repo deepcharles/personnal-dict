@@ -89,7 +89,7 @@ def git_push(entry):
     term = entry.get("term", "entry")
     type_ = entry.get("type", "entry")
     subprocess.run(["git", "add", "index.html"], check=True)
-    subprocess.run(["git", "commit", "-m", f"Add {type_}: {term}"], check=True)
+    subprocess.run(["git", "commit", "-m", f"Add {type_}: {term} [skip ci]"], check=True)
     subprocess.run(["git", "push", "origin", "HEAD:main"], check=True)
 
 

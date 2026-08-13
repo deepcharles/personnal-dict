@@ -1,19 +1,9 @@
-pages:
-  stage: deploy
-  variables:
-    LANG: C.UTF-8
-    LC_ALL: C.UTF-8
-  script:
-    - mkdir -p public
-    - cp index.html public/
-  artifacts:
-    paths:
-      - public
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+stages:
+  - process
+  - deploy
 
 process-dictionary:
-  stage: deploy
+  stage: process
   image: python:3.12
   variables:
     LANG: C.UTF-8
@@ -23,5 +13,25 @@ process-dictionary:
     - pip install anthropic requests --quiet
   script:
     - python3 scripts/process_issues.py
+  artifacts:
+    paths:
+      - index.html
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
+
+pages:
+  stage: deploy
+  variables:
+    LANG: C.UTF-8
+    LC_ALL: C.UTF-8
+  needs:
+    - job: process-dictionary
+      optional: true
+  script:
+    - mkdir -p public
+    - cp index.html public/
+  artifacts:
+    paths:
+      - public
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
