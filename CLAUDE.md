@@ -12,7 +12,7 @@ The owner will ask you, in plain language, to add entries (e.g. "add the word
 1. Add the entry/entries to the `ENTRIES` array in `index.html` (see schema + location below).
 2. Validate the embedded JSON:
    ```bash
-   python3 -c "import json,re; s=open('index.html',encoding='utf-8').read(); json.loads(re.search(r'ENTRIES = (\[[\s\S]*?\n\]);', s).group(1)); print('OK')"
+   python3 -c "import json,re; s=open('index.html',encoding='utf-8').read(); json.loads(re.search(r'\nENTRIES = (\[[\s\S]*?\n\]);', s).group(1)); print('OK')"
    ```
 3. Commit with a clear message (e.g. `Add word: ephemeral`).
 4. Push to the default branch (`main`).
