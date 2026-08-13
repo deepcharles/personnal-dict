@@ -5,7 +5,7 @@ pages:
     LC_ALL: C.UTF-8
   script:
     - mkdir -p public
-    - cp index.html entries.json public/
+    - cp index.html public/
   artifacts:
     paths:
       - public
