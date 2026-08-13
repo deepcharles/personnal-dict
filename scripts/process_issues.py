@@ -87,6 +87,46 @@ def add_entry(entry):
         f.write("\n")
 
 
+LANG_TO_LT = {"en": "en-US", "fr": "fr", "ar": "ar"}
+
+
+def check_grammar(fields):
+    """Run LanguageTool on meaning + example, post findings as issue comment."""
+    lang = fields.get("lang", fields.get("language", "en"))
+    lt_lang = LANG_TO_LT.get(lang, "en-US")
+    targets = {k: fields[k] for k in ("meaning", "example") if fields.get(k)}
+    if not targets:
+        return
+
+    findings = []
+    for field, text in targets.items():
+        try:
+            resp = requests.post(
+                "https://api.languagetool.org/v2/check",
+                data={"text": text, "language": lt_lang},
+                timeout=10,
+            )
+            resp.raise_for_status()
+            for m in resp.json().get("matches", []):
+                o, l = m["offset"], m["length"]
+                snippet = text[max(0, o - 10):o + l + 10].strip()
+                suggestions = [r["value"] for r in m["replacements"][:3]]
+                line = f"- **{field}**: _{m['message']}_ in `{snippet}`"
+                if suggestions:
+                    line += " → " + ", ".join(f"`{s}`" for s in suggestions)
+                findings.append(line)
+        except Exception:
+            pass
+
+    body = ("**Grammar check** found potential issues:\n\n" + "\n".join(findings)
+            if findings else "**Grammar check** ✓ No issues found.")
+    requests.post(
+        f"{API}/repos/{REPO}/issues/{ISSUE_NUMBER}/comments",
+        json={"body": body},
+        headers=HEADERS,
+    ).raise_for_status()
+
+
 def close_issue():
     requests.patch(
         f"{API}/repos/{REPO}/issues/{ISSUE_NUMBER}",
@@ -109,6 +149,7 @@ def main():
         body = fetch_issue()
         fields = parse_form(body)
         entry = build_entry(fields)
+        check_grammar(fields)
         add_entry(entry)
         with open("entries.json", encoding="utf-8") as f:
             json.load(f)  # validate
