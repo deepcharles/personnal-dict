@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lexicon</title>
+<style>
+  :root{
+    --ink:#1a1714;
+    --paper:#f6f2e9;
+    --paper-deep:#ece5d6;
+    --rule:#d6cdb8;
+    --accent:#7a3b2e;
+    --accent-soft:#a8654f;
+    --muted:#8a7f6d;
+    --gold:#b8933f;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    line-height:1.5;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding:clamp(1.2rem,4vw,3rem);
+  }
+
+  /* ---- Masthead ---- */
+  header{
+    border-bottom:2px solid var(--ink);
+    padding-bottom:1rem;
+    margin-bottom:.4rem;
+  }
+  .masthead-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.62rem;
+    letter-spacing:.22em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  h1{
+    font-size:clamp(2.6rem,9vw,5.5rem);
+    font-weight:400;
+    letter-spacing:-.02em;
+    line-height:.95;
+    margin:.2rem 0 .1rem;
+  }
+  h1 .dot{color:var(--accent)}
+  .tagline{
+    font-style:italic;
+    color:var(--muted);
+    font-size:clamp(.95rem,2.5vw,1.15rem);
+  }
+
+  /* ---- Controls ---- */
+  .controls{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.6rem .8rem;
+    align-items:center;
+    margin:1.6rem 0 2.4rem;
+  }
+  .search{
+    flex:1 1 220px;
+    position:relative;
+  }
+  .search input{
+    width:100%;
+    background:transparent;
+    border:none;
+    border-bottom:1.5px solid var(--rule);
+    padding:.5rem .2rem .5rem 1.5rem;
+    font-family:inherit;
+    font-size:1.05rem;
+    color:var(--ink);
+    outline:none;
+    transition:border-color .2s;
+  }
+  .search input:focus{border-color:var(--accent)}
+  .search input::placeholder{color:var(--muted);font-style:italic}
+  .search::before{
+    content:"⌕";
+    position:absolute;
+    left:0;top:50%;
+    transform:translateY(-50%);
+    color:var(--muted);
+    font-size:1.2rem;
+  }
+  .filters{display:flex;gap:.3rem;flex-wrap:wrap}
+  .chip{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.66rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    padding:.42rem .7rem;
+    border:1px solid var(--rule);
+    background:transparent;
+    color:var(--muted);
+    cursor:pointer;
+    border-radius:2px;
+    transition:all .18s;
+  }
+  .chip:hover{border-color:var(--accent-soft);color:var(--accent)}
+  .chip[aria-pressed="true"]{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--paper);
+  }
+  .dice{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.7rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    padding:.5rem 1.1rem;
+    border:1.5px solid var(--accent);
+    background:var(--accent);
+    color:var(--paper);
+    cursor:pointer;
+    border-radius:2px;
+    transition:all .18s;
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+  }
+  .dice:hover{background:var(--accent-soft);border-color:var(--accent-soft)}
+  .dice:active{transform:translateY(1px)}
+  .dice .pip{font-size:1.05rem;line-height:1}
+
+  /* ---- Count line ---- */
+  .count{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.64rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:1.1rem;
+    border-bottom:1px solid var(--rule);
+    padding-bottom:.6rem;
+  }
+
+  /* ---- Entries ---- */
+  main{flex:1}
+  .entry{
+    padding:1.7rem 0;
+    border-bottom:1px solid var(--rule);
+    animation:rise .5s ease both;
+  }
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .entry.flash{
+    background:linear-gradient(90deg,var(--paper-deep),transparent 60%);
+    box-shadow:-1rem 0 0 var(--paper-deep);
+  }
+  .entry-head{
+    display:flex;
+    align-items:baseline;
+    flex-wrap:wrap;
+    gap:.5rem .9rem;
+  }
+  .kind{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.6rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--accent);
+    border:1px solid var(--rule);
+    padding:.16rem .45rem;
+    border-radius:2px;
+    align-self:center;
+  }
+  .term{
+    font-size:clamp(1.7rem,5vw,2.5rem);
+    font-weight:400;
+    letter-spacing:-.01em;
+    line-height:1.1;
+  }
+  .entry.quote .term{
+    font-style:italic;
+    font-size:clamp(1.4rem,4vw,2rem);
+  }
+  .entry.quote .term::before{content:"“";color:var(--gold)}
+  .entry.quote .term::after{content:"”";color:var(--gold)}
+  .lang{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.62rem;
+    letter-spacing:.12em;
+    color:var(--muted);
+    text-transform:uppercase;
+  }
+  .pron{
+    display:flex;
+    align-items:center;
+    gap:.7rem;
+    margin-top:.55rem;
+    flex-wrap:wrap;
+  }
+  .ipa{
+    color:var(--accent-soft);
+    font-size:1.05rem;
+  }
+  .cam-link{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.62rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    text-decoration:none;
+    border-bottom:1px solid var(--rule);
+    padding-bottom:1px;
+    transition:color .18s,border-color .18s;
+  }
+  .cam-link:hover{color:var(--accent);border-color:var(--accent)}
+  .cam-link::before{content:"🔊 ";}
+  .meaning{
+    margin-top:.7rem;
+    font-size:1.1rem;
+    max-width:60ch;
+  }
+  .attribution{
+    margin-top:.5rem;
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.7rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .attribution::before{content:"— "}
+  .example{
+    margin-top:.85rem;
+    padding-left:1rem;
+    border-left:2px solid var(--gold);
+    font-style:italic;
+    color:#4a4238;
+    max-width:62ch;
+  }
+  .example .lbl{
+    display:block;
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-style:normal;
+    font-size:.58rem;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:.25rem;
+  }
+
+  /* RTL for Arabic */
+  [dir="rtl"] .term,[dir="rtl"] .meaning,[dir="rtl"] .example{
+    text-align:right;
+    font-family:"Geeza Pro","Noto Naskh Arabic",serif;
+  }
+  [dir="rtl"] .example{
+    border-left:none;
+    border-right:2px solid var(--gold);
+    padding-left:0;
+    padding-right:1rem;
+  }
+
+  .empty{
+    padding:3rem 0;
+    color:var(--muted);
+    font-style:italic;
+    font-size:1.1rem;
+  }
+
+  footer{
+    margin-top:2.5rem;
+    padding-top:1rem;
+    border-top:2px solid var(--ink);
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.6rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:.5rem;
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    .entry{animation:none}
+  }
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+</style>
+</head>
+<body>
+  <header>
+    <div class="masthead-top">
+      <span>Personal Lexicon</span>
+      <span id="stamp"></span>
+    </div>
+    <h1>Lexicon<span class="dot">.</span></h1>
+    <p class="tagline">Words, idioms &amp; lines worth keeping — in three tongues.</p>
+  </header>
+
+  <div class="controls">
+    <div class="search">
+      <input id="search" type="search" placeholder="Search a word, meaning, or line…" aria-label="Search entries">
+    </div>
+    <div class="filters" id="filters">
+      <button class="chip" data-f="all" aria-pressed="true">All</button>
+      <button class="chip" data-f="word" aria-pressed="false">Words</button>
+      <button class="chip" data-f="idiom" aria-pressed="false">Idioms</button>
+      <button class="chip" data-f="quote" aria-pressed="false">Quotes</button>
+    </div>
+    <button class="dice" id="random"><span class="pip">⚄</span> Draw one</button>
+  </div>
+
+  <div class="count" id="count"></div>
+
+  <main id="list"></main>
+
+  <footer>
+    <span>EN · FR · AR</span>
+    <span id="foot-count"></span>
+  </footer>
+
+<script>
+const LANG_LABEL = {en:"English", fr:"Français", ar:"العربية"};
+const RTL = new Set(["ar"]);
+let ENTRIES = [];
+let filter = "all";
+let query = "";
+
+const listEl = document.getElementById("list");
+const countEl = document.getElementById("count");
+const footCountEl = document.getElementById("foot-count");
+const searchEl = document.getElementById("search");
+
+document.getElementById("stamp").textContent =
+  new Date().toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+
+function esc(s){return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+
+function render(list){
+  if(!list.length){
+    listEl.innerHTML = '<p class="empty">Nothing here yet. Try another search, or add an entry to entries.json.</p>';
+    countEl.textContent = "0 entries";
+    footCountEl.textContent = ENTRIES.length + " total";
+    return;
+  }
+  listEl.innerHTML = list.map((e,i)=>{
+    const rtl = RTL.has(e.lang) ? ' dir="rtl"' : '';
+    const kind = esc(e.type||"word");
+    let head = `<span class="kind">${kind}</span>`;
+    head += `<span class="term">${esc(e.term)}</span>`;
+    if(e.lang && e.type!=="quote") head += `<span class="lang">${LANG_LABEL[e.lang]||e.lang}</span>`;
+
+    let pron = "";
+    if(e.pronunciation || e.cambridge){
+      pron = '<div class="pron">';
+      if(e.pronunciation) pron += `<span class="ipa">${esc(e.pronunciation)}</span>`;
+      if(e.cambridge) pron += `<a class="cam-link" href="${esc(e.cambridge)}" target="_blank" rel="noopener">Cambridge</a>`;
+      pron += '</div>';
+    }
+    const meaning = e.meaning ? `<p class="meaning">${esc(e.meaning)}</p>` : "";
+    const attr = e.attribution ? `<p class="attribution">${esc(e.attribution)}</p>` : "";
+    const ex = e.example ? `<div class="example"><span class="lbl">In use</span>${esc(e.example)}</div>` : "";
+
+    return `<article class="entry ${kind}"${rtl}>
+      <div class="entry-head">${head}</div>
+      ${pron}${meaning}${attr}${ex}
+    </article>`;
+  }).join("");
+  const n = list.length;
+  countEl.textContent = n + (n===1?" entry":" entries") + (filter!=="all"||query?` · filtered`:"");
+  footCountEl.textContent = ENTRIES.length + " total";
+}
+
+function current(){
+  const q = query.trim().toLowerCase();
+  return ENTRIES.filter(e=>{
+    if(filter!=="all" && (e.type||"word")!==filter) return false;
+    if(!q) return true;
+    return [e.term,e.meaning,e.example,e.attribution].some(f=>(f||"").toLowerCase().includes(q));
+  });
+}
+
+function apply(){ render(current()); }
+
+document.getElementById("filters").addEventListener("click",ev=>{
+  const btn = ev.target.closest(".chip");
+  if(!btn) return;
+  filter = btn.dataset.f;
+  [...document.querySelectorAll(".chip")].forEach(c=>c.setAttribute("aria-pressed", c===btn));
+  apply();
+});
+
+searchEl.addEventListener("input",e=>{ query=e.target.value; apply(); });
+
+document.getElementById("random").addEventListener("click",()=>{
+  const pool = current().length ? current() : ENTRIES;
+  if(!pool.length) return;
+  const pick = pool[Math.floor(Math.random()*pool.length)];
+  render([pick]);
+  const el = listEl.querySelector(".entry");
+  if(el){ el.classList.add("flash"); el.scrollIntoView({behavior:"smooth",block:"center"}); }
+});
+
+fetch("entries.json")
+  .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
+  .then(data=>{ ENTRIES = data; apply(); })
+  .catch(()=>{
+    listEl.innerHTML = '<p class="empty">Could not load entries.json. If you\'re opening this file directly, run it through a local server or via GitLab Pages.</p>';
+  });
+</script>
+</body>
+</html>
