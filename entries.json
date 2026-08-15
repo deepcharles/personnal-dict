@@ -181,5 +181,15 @@
     "pronunciation": "/kaːmjljaː/",
     "meaning": "Camellia — found in Kurosawa's Sanjuro, Lynch's Mulholland Drive, Verdi's Traviata (based on The Lady of the Camellias), Camelia Jordana, Queen Camilla",
     "date": "2026-08-13"
+  },
+  {
+    "type": "word",
+    "term": "sublunary",
+    "lang": "en",
+    "pronunciation": "/sʌbˈluːnəɹi/",
+    "cambridge": "https://dictionary.cambridge.org/pronunciation/english/sublunary",
+    "meaning": "Life on earth, hic et nunc",
+    "example": "Nothing good happens in the sublunary world. (Yves Bonnefoy in his preface to The Tempest.)",
+    "date": "2026-08-15"
   }
 ]
